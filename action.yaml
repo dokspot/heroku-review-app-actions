@@ -24,6 +24,10 @@ inputs:
     description: "Set up the initial build using app.json. For more info: https://devcenter.heroku.com/articles/setting-up-apps-using-the-heroku-platform-api"
     default: false
     required: false
+  team:
+    description: "Name of the team that owns the pipeline",
+    default: false
+    required: false
 outputs:
   url:
     description: "The URL for the app"
@@ -72,7 +76,7 @@ runs:
         export URL=$(echo ${{ toJSON(steps.source_endpoint.outputs.SOURCE_ENDPOINT) }} | jq -r '.put')
         curl $URL -X PUT -H 'Content-Type:' --data-binary @source.tar.gz
     - name: Create App
-      if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') && inputs.use-app-json == 'false' }}
+      if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') && inputs.use-app-json == 'false' && input.team == 'false' }}
       shell: bash
       run: |
         curl -X POST https://api.heroku.com/apps \
@@ -96,6 +100,22 @@ runs:
           "name": "'"$APP_NAME"'",
           "region": "${{ inputs.region }}"
         }
+        }' \
+        -H "Content-Type: application/json" \
+        -H "Accept: application/vnd.heroku+json; version=3" \
+        -H "Authorization: Bearer ${{ inputs.api-key }}"
+    - name: Create Team App
+      if: ${{ github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened') && inputs.use-app-json == 'false' && input.team != 'false' }}
+      shell: bash
+      run: |
+        curl -X POST https://api.heroku.com/teams/apps \
+        -d '{
+        "locked": false,
+        "name": "'"$APP_NAME"'",
+        "team": "${{ inputs.team }}",
+        "region": "${{ inputs.region }}",
+        "stack": "${{ inputs.stack }}",
+        "internal_routing": false
         }' \
         -H "Content-Type: application/json" \
         -H "Accept: application/vnd.heroku+json; version=3" \
