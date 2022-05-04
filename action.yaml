@@ -25,7 +25,7 @@ inputs:
     default: false
     required: false
   team:
-    description: "Name of the team that owns the pipeline",
+    description: "Name of the team that owns the pipeline"
     default: false
     required: false
 outputs:
