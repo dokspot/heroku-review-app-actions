@@ -66,7 +66,7 @@ runs:
             "branch": "${{ github.ref_name }}",
             "pipeline": "${{ inputs.pipeline-id }}",
             "source_blob": {"url": "'"$SOURCE_GET_URL"'", "version": "'"${{ github.event.pull_request.head.sha }}"'"},
-          }'
+          }' \
           -H "Content-Type: application/json" \
           -H "Accept: application/vnd.heroku+json; version=3" \
-          -H "Authorization: Bearer ${{ inputs.api-key }}" | \
+          -H "Authorization: Bearer ${{ inputs.api-key }}"
