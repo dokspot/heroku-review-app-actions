@@ -12,18 +12,6 @@ inputs:
   pipeline-id:
     description: "The id of the pipeline to deploy review app for"
     required: true
-  region:
-    description: "Region to deploy. eu or us"
-    default: "eu"
-    required: false
-  stack:
-    description: "Heroku stack to deploy to e.g heroku-18. Default: heroku-20"
-    default: "heroku-20"
-    required: false
-  use-app-json:
-    description: "Set up the initial build using app.json. For more info: https://devcenter.heroku.com/articles/setting-up-apps-using-the-heroku-platform-api"
-    default: false
-    required: false
 outputs:
   url:
     description: "The URL for the app"
@@ -58,6 +46,7 @@ runs:
         -H "Accept: application/vnd.heroku+json; version=3" \
         -H "Authorization: Bearer ${{ inputs.api-key }}" | \
         jq -r '{get: .source_blob.get_url, put: .source_blob.put_url}')
+        echo ${{ toJSON(steps.source_endpoint.outputs.SOURCE_ENDPOINT) }}
     - name: Compress Source Code
       if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
       shell: bash
@@ -66,8 +55,6 @@ runs:
     - name: Upload Source Code
       if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
       shell: bash
-      env:
-        SOURCE_ENDPOINT_GET: ${{ steps.source_endpoint_env.outputs.SOURCE_ENDPOINT_GET }}
       run: |
         export URL=$(echo ${{ toJSON(steps.source_endpoint.outputs.SOURCE_ENDPOINT) }} | jq -r '.put')
         curl $URL -X PUT -H 'Content-Type:' --data-binary @source.tar.gz
