@@ -69,7 +69,7 @@ runs:
             "branch": "${{ steps.branch-name.outputs.current_branch }}",
             "pipeline": "${{ inputs.pipeline-id }}",
             "source_blob": {"url": "'"$SOURCE_GET_URL"'", "version": "'"${{ github.event.pull_request.head.sha }}"'"},
-            "pr_number": "${{ github.event.number }}"
+            "pr_number": ${{ github.event.number }}
           }' \
           -H "Content-Type: application/json" \
           -H "Accept: application/vnd.heroku+json; version=3" \
