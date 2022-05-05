@@ -71,7 +71,7 @@ runs:
           }'
         echo $data
         curl -n -X POST https://api.heroku.com/review-apps \
-          -d $data \
+          -d "'"$data"'" \
           -H "Content-Type: application/json" \
           -H "Accept: application/vnd.heroku+json; version=3" \
           -H "Authorization: Bearer ${{ inputs.api-key }}"
