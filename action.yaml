@@ -49,6 +49,9 @@ runs:
         jso=$(echo $str | jq -r '{get: .source_blob.get_url, put: .source_blob.put_url}')
         echo $jso
         echo ::set-output name=SOURCE_ENDPOINT::$jso
+        echo ${{ toJSON(steps) }}
+        echo ${{ toJSON(steps.source_endpoint) }}
+        echo ${{ toJSON(steps.source_endpoint.outputs) }}
         echo ${{ toJSON(steps.source_endpoint.outputs.SOURCE_ENDPOINT) }}
     - name: Compress Source Code
       if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
